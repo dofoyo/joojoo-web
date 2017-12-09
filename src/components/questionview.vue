@@ -3,21 +3,28 @@
     <table class="table table-striped table-bordered">
       <tbody align="left">
         <tr>
-          <td>
-              <img :src="question.originalImageUrl" class="img-rounded">
+          <td @click="previous">上一题</td>
+          <td>{{question.id}}</td>
+          <td @click="next">下一题</td>
+        </tr>
+        <tr>
+          <td colspan="3">
+              <img :src="question.originalImageUrl" class="img-responsive">
+              <img :src="question.contentImageUrl" class="img-responsive">
           </td>
         </tr>  
         <tr>
-          <td>
+          <td colspan="2">
             <textarea class="form-control" rows="3" v-model="question.content"></textarea>
-            <br>
-            <img :src="question.contentImageUrl">
-            <br>
-            <button type="button" class="btn btn-primary btn-lg btn-block" @click="updateContent">{{msg}}</button>
+            <button type="button" id="updateContent" class="btn btn-primary btn-lg btn-block" @click="updateContent" :disabled="disableUpdateContentButton">{{msg}}</button>
+          </td>
+          <td>
+            <textarea class="form-control" rows="3" v-model="question.knowledgeTag"></textarea>
+            <button type="button" id="updateKnowledgeTag" class="btn btn-primary btn-lg btn-block" @click="updateKnowledgeTag" :disabled="disableUpdateKnowledgeTagButton">{{msg}}</button>
           </td>
         </tr>
         <tr>
-          <td>
+          <td colspan="3">
            <div class="row">
               <div class="col-md-1">正确：</div>
               <div class="col-md-1"><button type="button" class="btn btn-default" @click="minRightTimes">-</button></div>
@@ -27,7 +34,7 @@
           </td>
         </tr>
         <tr>
-          <td>
+          <td colspan="3">
            <div class="row">
               <div class="col-md-1">错误：</div>
               <div class="col-md-1"><button type="button" class="btn btn-default" @click="minWrongTimes">-</button></div>
@@ -46,20 +53,104 @@
 export default {
   name: 'questionview',
   props: {
-        id:''
+      id:'',
+      questions:{}
   },
   data () {
     return {
       msg: '保存',
-      question:{}
+      pindex:0,
+      index:0,
+      nindex:0,
+      question:{},
+      oldKnowledgeTag:'',
+      oldContent:'',
+      disableUpdateKnowledgeTagButton:true,
+      disableUpdateContentButton:true
     }
   },
   mounted: function() {
-      this.getData();
+      this.getDataFromProps();
+  },
+  watch:{
+    'question.knowledgeTag': {
+      handler: function(val, oldval){
+        var vm = this;
+        if(vm.oldKnowledgeTag != val){
+          vm.disableUpdateKnowledgeTagButton = false;
+        }else{
+          vm.disableUpdateKnowledgeTagButton = true;
+        }
+      },
+      deep:true
+    },
+    'question.content':{
+      handler: function(val, oldval){
+        var vm = this;
+        if(vm.oldContent != val){
+          vm.disableUpdateContentButton = false;
+        }else{
+          vm.disableUpdateContentButton = true;
+        }
+      },
+      deep:true
+    }
   },
   methods:{
-    getData:function(){
+    getDataFromProps:function(){
+      var vm = this;
+      //console.log(vm.questions);
+      for (var i = 0; i < vm.questions.length; i++) {
+        if(vm.id == vm.questions[i].id){
+          vm.index = i;
+          vm.question = vm.questions[i];
+          vm.oldKnowledgeTag = vm.question.knowledgeTag;
+          vm.oldContent = vm.question.content;
+          if(vm.index == 0){
+            vm.pindex = vm.index;
+            vm.nindex = vm.index + 1;
+          }else if(vm.index == vm.questions.length-1){
+            vm.nindex = vm.index;
+            vm.pindex = vm.index - 1; 
+          }else{
+            vm.pindex = vm.index - 1;
+            vm.nindex = vm.index + 1;
+          }
 
+          //console.log(vm.question);
+          break;
+        }
+      }
+    },
+    previous:function(){
+      var vm = this;
+      if(vm.pindex == 0){
+        vm.index = 0;
+        vm.nindex = 1;
+      }else{
+        vm.index--;
+        vm.pindex--;
+        vm.nindex--;
+      }
+      vm.question = vm.questions[vm.index];
+      vm.oldKnowledgeTag = vm.question.knowledgeTag;
+      vm.oldContent = vm.question.content;
+    },
+    next:function(){
+      var vm = this;
+      if(vm.nindex == vm.questions.length-1){
+        vm.index = vm.next;
+        vm.pindex = vm.index - 1;
+      }else{
+        vm.index++;
+        vm.pindex++;
+        vm.nindex++;
+      }
+      vm.question = vm.questions[vm.index];
+      vm.oldKnowledgeTag = vm.question.knowledgeTag;
+      vm.oldContent = vm.question.content;
+    },
+    getDataFromApi:function(){   // 无用，仅供参考 
       var vm = this;
       var apiurl = process.env.API_ROOT + 'question';
       var resource = vm.$resource(apiurl);
@@ -78,18 +169,38 @@ export default {
               })
     },
     updateContent:function(){
-      this.msg = "正在保存......";
+      var vm = this;
+      vm.disableUpdateContentButton = true;
+      vm.msg = "正在保存......";
       var root = process.env.API_ROOT;
       var apiurl = root + 'question_content'
-      var resource = this.$resource(apiurl);
-      var vm = this;
+      var resource = vm.$resource(apiurl);
       resource.update({id:vm.question.id},{content:vm.question.content})
               .then(function(){ 
                   console.log("updateContent: success!");
-                  this.msg = "保存";
+                  vm.msg = "保存";
+                  vm.oldContent = vm.question.content;
                 })
               .catch(function(response){
-                console.log("updateRightTimes: there are something wrong!!!");
+                console.log("updateContent: there are something wrong!!!");
+                console.log(response);
+              });
+    },
+    updateKnowledgeTag:function(){
+      var vm = this;
+      vm.disableUpdateKnowledgeTagButton = true;
+      vm.msg = "正在保存......";
+      var root = process.env.API_ROOT;
+      var apiurl = root + 'question_knowledgeTag'
+      var resource = vm.$resource(apiurl);
+      resource.update({id:vm.question.id},{knowledgeTag:vm.question.knowledgeTag})
+              .then(function(){ 
+                  console.log("updateKnowledgeTag: success!");
+                  vm.msg = "保存";
+                  vm.oldKnowledgeTag = vm.question.knowledgeTag;
+                })
+              .catch(function(response){
+                console.log("updateKnowledgeTag: there are something wrong!!!");
                 console.log(response);
               });
     },
@@ -136,9 +247,11 @@ export default {
     minWrongTimes:function(){
       this.question.wrongTimes = parseInt(this.question.wrongTimes) - 1;
       this.updateWrongTimes();
-    }
+    }  
   }
 }
+
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

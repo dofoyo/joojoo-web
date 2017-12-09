@@ -1,11 +1,14 @@
 <template>
   <div class="questionlist">
     <div class="row" v-for="(question,index) in questions">
-      <div class="col-md-1">{{index+1}}</div>
       <div class="col-md-7" align="left">
+        {{index+1}}
+        <p></p>
         {{question.content}}
-        <br>
+        <p></p>
         <img :src="question.contentImageUrl">
+        <p></p>
+        <p></p>
       </div>
     </div>
   </div>

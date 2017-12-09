@@ -11,12 +11,15 @@
       <tr v-for="(question,index) in questions">
         <td>{{index+1}}</td>
         <td>
-          <router-link :to="{name:'questionview',params:{id:question.id}}">
+          <router-link :to="{name:'questionview',params:{id:question.id,questions:questions}}">
               <img :src="question.originalImageUrl" class="img-circle">
           </router-link>
         </td>
-        <td align="left">
+        <td align="left" @click="routergo(question.id)">
           {{question.content}}
+        </td>
+        <td align="left">
+          {{question.knowledgeTag}}
         </td>
       </tr>
       </tbody>
@@ -68,6 +71,10 @@ export default {
                 console.log("there are something wrong!!!");
                 console.log(response);
               });
+    },
+    routergo: function(theid){
+      var vm = this;
+      this.$router.push({name: 'questionview', params: {id:theid,questions:vm.questions}});
     }
   }
 }
