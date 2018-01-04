@@ -8,12 +8,6 @@
           <td @click="next">下一题</td>
         </tr>
         <tr>
-          <td colspan="3">
-              <img :src="question.originalImageUrl" class="img-responsive">
-              <img :src="question.contentImageUrl" class="img-responsive">
-          </td>
-        </tr>  
-        <tr>
           <td colspan="2">
             <textarea class="form-control" rows="3" v-model="question.content"></textarea>
             <button type="button" id="updateContent" class="btn btn-primary btn-lg btn-block" @click="updateContent" :disabled="disableUpdateContentButton">{{msg}}</button>
@@ -23,6 +17,22 @@
             <button type="button" id="updateKnowledgeTag" class="btn btn-primary btn-lg btn-block" @click="updateKnowledgeTag" :disabled="disableUpdateKnowledgeTagButton">{{msg}}</button>
           </td>
         </tr>
+        <tr>
+          <td colspan="3">
+           <div class="row">
+              <div class="col-md-1">难度：</div>
+              <div class="col-md-1"><button type="button" class="btn btn-default" @click="minDifficulty">-</button></div>
+              <div class="col-md-1"><input type="text" class="form-control" v-model="question.difficulty"></div>
+              <div class="col-md-1"><button type="button" class="btn btn-default"  @click="addDifficulty">+</button></div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3">
+              <img :src="question.originalImageUrl" class="img-responsive">
+              <img :src="question.contentImageUrl" class="img-responsive">
+          </td>
+        </tr>  
         <tr>
           <td colspan="3">
            <div class="row">
@@ -59,9 +69,9 @@ export default {
   data () {
     return {
       msg: '保存',
-      pindex:0,
+      //pindex:0,
       index:0,
-      nindex:0,
+      //nindex:0,
       question:{},
       oldKnowledgeTag:'',
       oldContent:'',
@@ -106,6 +116,7 @@ export default {
           vm.question = vm.questions[i];
           vm.oldKnowledgeTag = vm.question.knowledgeTag;
           vm.oldContent = vm.question.content;
+          /*
           if(vm.index == 0){
             vm.pindex = vm.index;
             vm.nindex = vm.index + 1;
@@ -116,6 +127,7 @@ export default {
             vm.pindex = vm.index - 1;
             vm.nindex = vm.index + 1;
           }
+          */
 
           //console.log(vm.question);
           break;
@@ -124,31 +136,21 @@ export default {
     },
     previous:function(){
       var vm = this;
-      if(vm.pindex == 0){
-        vm.index = 0;
-        vm.nindex = 1;
-      }else{
+      if(vm.index >0){
         vm.index--;
-        vm.pindex--;
-        vm.nindex--;
+        vm.question = vm.questions[vm.index];
+        vm.oldKnowledgeTag = vm.question.knowledgeTag;
+        vm.oldContent = vm.question.content;        
       }
-      vm.question = vm.questions[vm.index];
-      vm.oldKnowledgeTag = vm.question.knowledgeTag;
-      vm.oldContent = vm.question.content;
     },
     next:function(){
       var vm = this;
-      if(vm.nindex == vm.questions.length-1){
-        vm.index = vm.next;
-        vm.pindex = vm.index - 1;
-      }else{
+      if(vm.index < vm.questions.length-1){
         vm.index++;
-        vm.pindex++;
-        vm.nindex++;
+        vm.question = vm.questions[vm.index];
+        vm.oldKnowledgeTag = vm.question.knowledgeTag;
+        vm.oldContent = vm.question.content;          
       }
-      vm.question = vm.questions[vm.index];
-      vm.oldKnowledgeTag = vm.question.knowledgeTag;
-      vm.oldContent = vm.question.content;
     },
     getDataFromApi:function(){   // 无用，仅供参考 
       var vm = this;
@@ -247,6 +249,28 @@ export default {
     minWrongTimes:function(){
       this.question.wrongTimes = parseInt(this.question.wrongTimes) - 1;
       this.updateWrongTimes();
+    },
+    updateDifficulty:function(){
+      var root = process.env.API_ROOT;
+      var apiurl = root + 'question_difficulty'
+      var resource = this.$resource(apiurl);
+      var vm = this;
+      resource.update({id:vm.question.id},{difficulty:vm.question.difficulty})
+              .then(function(){ 
+                  console.log("update difficulty: success!");
+                })
+              .catch(function(response){
+                console.log("update difficulty: there are something wrong!!!");
+                console.log(response);
+              });
+    },
+    addDifficulty:function(){
+      this.question.difficulty = parseInt(this.question.difficulty) + 1;
+      this.updateDifficulty();
+    },
+    minDifficulty:function(){
+      this.question.difficulty = parseInt(this.question.difficulty) - 1;
+      this.updateDifficulty();
     }  
   }
 }

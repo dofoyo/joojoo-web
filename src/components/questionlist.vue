@@ -2,11 +2,10 @@
   <div class="questionlist">
     <div class="row" v-for="(question,index) in questions">
       <div class="col-md-7" align="left">
-        {{index+1}}
-        <p></p>
-        {{question.content}}
+        {{index+1}}. {{question.content}}
         <p></p>
         <img :src="question.contentImageUrl">
+        <p></p>
         <p></p>
         <p></p>
       </div>
@@ -35,6 +34,7 @@ export default {
       resource.get()
               .then((response) => {
                 vm.questions = response.data.content;
+                console.log(vm.questions);
              })
               .catch(function(response) {
                 console.log("there are something wrong!!!");

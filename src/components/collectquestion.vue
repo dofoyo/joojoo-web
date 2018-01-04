@@ -1,18 +1,35 @@
 <template>
   <div class="collectquestion">
     <div class="row">
-      <div class="col-md-4"><h2>{{msg}}</h2></div>
       <div class="col-md-2" align="right">
         <button type="button" class="btn btn-primary" @click="refresh">刷新</button>
       </div>
+      <div class="col-md-4"></div>
+      <div class="col-md-2" align="right">
+          <div class="input-group">
+          <input type="text" class="form-control" placeholder="按知识点筛选..." v-model='knowledgeTagFilter'>
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" @click="getData">Go!</button>
+          </span>
+        </div>
+      </div>
+      <div class="col-md-2" align="right">
+          <div class="input-group">
+          <input type="text" class="form-control" placeholder="按难度筛选..." v-model='difficultyFilter'>
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" @click="getData">Go!</button>
+          </span>
+        </div>
+      </div>
+
     </div>
     <table class="table table-striped table-bordered">
       <tbody>
       <tr v-for="(question,index) in questions">
         <td>{{index+1}}</td>
-        <td>
+        <td align="left">
           <router-link :to="{name:'questionview',params:{id:question.id,questions:questions}}">
-              <img :src="question.originalImageUrl" class="img-circle">
+              <img :src="question.originalImageUrl" class="img-rounded">
           </router-link>
         </td>
         <td align="left" @click="routergo(question.id)">
@@ -20,6 +37,9 @@
         </td>
         <td align="left">
           {{question.knowledgeTag}}
+        </td>
+        <td align="left">
+          {{question.difficulty}}
         </td>
       </tr>
       </tbody>
@@ -33,7 +53,9 @@ export default {
   data () {
     return {
       msg: 'collect question',
-      questions:[]
+      questions:[],
+      knowledgeTagFilter:'',
+      difficultyFilter:''
     }
   },
   mounted: function() {
@@ -45,8 +67,7 @@ export default {
       var vm = this;
       var apiurl = process.env.API_ROOT + 'questions';
       var resource = vm.$resource(apiurl);
-      
-      resource.get({orderBy:"orderByContent"})
+      resource.get({orderBy:"orderByContent",knowledgeTagFilter:vm.knowledgeTagFilter,difficultyFilter:vm.difficultyFilter})
               .then((response) => {
                 vm.questions = response.data.content;
                 //console.log(vm.questions);
@@ -83,6 +104,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 img {
-    zoom:10%;
+    zoom:30%;
 }
 </style>
