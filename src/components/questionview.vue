@@ -47,9 +47,20 @@
           <td colspan="3">
            <div class="row">
               <div class="col-md-1">错误：</div>
-              <div class="col-md-1"><button type="button" class="btn btn-default" @click="minWrongTimes">-</button></div>
-              <div class="col-md-1"><input type="text" class="form-control" v-model="question.wrongTimes"></div>
-              <div class="col-md-1"><button type="button" class="btn btn-default" @click="addWrongTimes">+</button></div>
+              <div class="col-md-1">
+                  <button type="button" class="btn btn-default" @click="minWrongTimes">-</button>
+              </div>
+              <div class="col-md-1">
+                  <input type="text" class="form-control" v-model="question.wrongTimes">
+              </div>
+              <div class="col-md-1">
+                  <button type="button" class="btn btn-default" @click="addWrongTimes">+</button>
+              </div>
+              <div class="col-md-5">
+                  <textarea class="form-control" rows="3" v-model="question.wrongTag"></textarea>
+                  <button type="button" id="updateWrongTag" class="btn btn-primary btn-lg btn-block" @click="updateWrongTag" :disabled="disableUpdateWrongTagButton">{{msg}}</button>
+
+              </div>
             </div>
           </td>
         </tr>       
@@ -75,7 +86,9 @@ export default {
       question:{},
       oldKnowledgeTag:'',
       oldContent:'',
+      oldWrongTag:'',
       disableUpdateKnowledgeTagButton:true,
+      disableUpdateWrongTagButton:true,
       disableUpdateContentButton:true
     }
   },
@@ -83,6 +96,17 @@ export default {
       this.getDataFromProps();
   },
   watch:{
+    'question.wrongTag': {
+      handler: function(val, oldval){
+        var vm = this;
+        if(vm.oldWrongTag != val){
+          vm.disableUpdateWrongTagButton = false;
+        }else{
+          vm.disableUpdateWrongTagButton = true;
+        }
+      },
+      deep:true
+    },
     'question.knowledgeTag': {
       handler: function(val, oldval){
         var vm = this;
@@ -116,6 +140,7 @@ export default {
           vm.question = vm.questions[i];
           vm.oldKnowledgeTag = vm.question.knowledgeTag;
           vm.oldContent = vm.question.content;
+          vm.oldWrongTag = vm.question.wrongTag;
           /*
           if(vm.index == 0){
             vm.pindex = vm.index;
@@ -141,6 +166,7 @@ export default {
         vm.question = vm.questions[vm.index];
         vm.oldKnowledgeTag = vm.question.knowledgeTag;
         vm.oldContent = vm.question.content;        
+        vm.oldWrongTag = vm.question.wrongTag;
       }
     },
     next:function(){
@@ -150,6 +176,7 @@ export default {
         vm.question = vm.questions[vm.index];
         vm.oldKnowledgeTag = vm.question.knowledgeTag;
         vm.oldContent = vm.question.content;          
+        vm.oldWrongTag = vm.question.wrongTag;
       }
     },
     getDataFromApi:function(){   // 无用，仅供参考 
@@ -185,6 +212,24 @@ export default {
                 })
               .catch(function(response){
                 console.log("updateContent: there are something wrong!!!");
+                console.log(response);
+              });
+    },
+    updateWrongTag:function(){
+      var vm = this;
+      vm.disableUpdateWrongTagButton = true;
+      vm.msg = "正在保存......";
+      var root = process.env.API_ROOT;
+      var apiurl = root + 'question_wrongTag'
+      var resource = vm.$resource(apiurl);
+      resource.update({id:vm.question.id},{wrongTag:vm.question.wrongTag})
+              .then(function(){ 
+                  console.log("updateWrongTag: success!");
+                  vm.msg = "保存";
+                  vm.oldWrongTag = vm.question.wrongTag;
+                })
+              .catch(function(response){
+                console.log("updateWrongTag: there are something wrong!!!");
                 console.log(response);
               });
     },
