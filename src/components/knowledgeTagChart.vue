@@ -16,7 +16,7 @@ export default {
         return {
             canvasId: 'myCanvas',
             type: 'bar',
-            width: 1200,
+            width: 1600,
             height: 400,
             demodata: [
                 {name: '2014', value: 1342},

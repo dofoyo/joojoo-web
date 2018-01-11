@@ -4,7 +4,16 @@
       <div class="col-md-2" align="right">
         <button type="button" class="btn btn-primary" @click="refresh">刷新</button>
       </div>
-      <div class="col-md-4"></div>
+      <div class="col-md-2"></div>
+
+      <div class="col-md-2" align="right">
+          <div class="input-group">
+          <input type="text" class="form-control" placeholder="按错误原因筛选..." v-model='wrongTagFilter'>
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" @click="getData">Go!</button>
+          </span>
+        </div>
+      </div>
       <div class="col-md-2" align="right">
           <div class="input-group">
           <input type="text" class="form-control" placeholder="按知识点筛选..." v-model='knowledgeTagFilter'>
@@ -36,6 +45,9 @@
           {{question.content}}
         </td>
         <td align="left">
+          {{question.wrongTag}}
+        </td>
+        <td align="left">
           {{question.knowledgeTag}}
         </td>
         <td align="left">
@@ -55,6 +67,7 @@ export default {
       msg: 'collect question',
       questions:[],
       knowledgeTagFilter:'',
+      wrongTagFilter:'',
       difficultyFilter:''
     }
   },
@@ -67,7 +80,7 @@ export default {
       var vm = this;
       var apiurl = process.env.API_ROOT + 'questions';
       var resource = vm.$resource(apiurl);
-      resource.get({orderBy:"orderByContent",knowledgeTagFilter:vm.knowledgeTagFilter,difficultyFilter:vm.difficultyFilter})
+      resource.get({orderBy:"orderByContent",knowledgeTagFilter:vm.knowledgeTagFilter,difficultyFilter:vm.difficultyFilter,wrongTagFilter:vm.wrongTagFilter})
               .then((response) => {
                 vm.questions = response.data.content;
                 //console.log(vm.questions);

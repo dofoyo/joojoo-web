@@ -1,6 +1,6 @@
 <template>
   <div class="questionview">
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered" border="1">
       <tbody align="left">
         <tr>
           <td @click="previous">上一题</td>
@@ -44,23 +44,27 @@
           </td>
         </tr>
         <tr>
-          <td colspan="3">
-           <div class="row">
-              <div class="col-md-1">错误：</div>
-              <div class="col-md-1">
-                  <button type="button" class="btn btn-default" @click="minWrongTimes">-</button>
+          <td>错误：{{question.wrongTimes}}</td>
+          <td colspan="2">
+              <div class="row">
+                <div class="col-lg-8">
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="错误原因" v-model='question.wrongTag'>
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" type="button" id="updateWrongTag" @click="updateWrongTag" :disabled="disableUpdateWrongTagButton">{{msg}}</button>
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div class="col-md-1">
-                  <input type="text" class="form-control" v-model="question.wrongTimes">
-              </div>
-              <div class="col-md-1">
-                  <button type="button" class="btn btn-default" @click="addWrongTimes">+</button>
-              </div>
-              <div class="col-md-5">
-                  <textarea class="form-control" rows="3" v-model="question.wrongTag"></textarea>
-                  <button type="button" id="updateWrongTag" class="btn btn-primary btn-lg btn-block" @click="updateWrongTag" :disabled="disableUpdateWrongTagButton">{{msg}}</button>
+          </td>
+        </tr>
 
-              </div>
+        <tr>
+          <td colspan="3">
+           <div class="row" v-for="wrongImageUrl in question.worngImageUrls">
+               <div class="col-md-9">
+                   <img :src="wrongImageUrl" class="img-responsive">
+                </div>
             </div>
           </td>
         </tr>       
@@ -272,28 +276,6 @@ export default {
     minRightTimes:function(){
       this.question.rightTimes = parseInt(this.question.rightTimes) - 1;
       this.updateRightTimes();
-    },
-    updateWrongTimes:function(){
-      var root = process.env.API_ROOT;
-      var apiurl = root + 'question_wrong'
-      var resource = this.$resource(apiurl);
-      var vm = this;
-      resource.update({id:vm.question.id},{wrongTimes:vm.question.wrongTimes})
-              .then(function(){ 
-                  console.log("updateWrongTimes: success!");
-                })
-              .catch(function(response){
-                console.log("updateWrongTimes: there are something wrong!!!");
-                console.log(response);
-              });
-    },
-    addWrongTimes:function(){
-      this.question.wrongTimes = parseInt(this.question.wrongTimes) + 1;
-      this.updateWrongTimes();
-    },
-    minWrongTimes:function(){
-      this.question.wrongTimes = parseInt(this.question.wrongTimes) - 1;
-      this.updateWrongTimes();
     },
     updateDifficulty:function(){
       var root = process.env.API_ROOT;
