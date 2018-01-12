@@ -1,9 +1,5 @@
 <template>
     <div class="row">
-
-
-
-
     <div id="app"  class="col-md-5">
         <schart :canvasId="canvasId"
             :type="type"
@@ -13,7 +9,6 @@
             :options="options"
         ></schart>
     </div>
-
           <div  class="col-md-2" align="right">
           <div class="input-group">
           <input type="text" class="form-control" placeholder="按错误率筛选..." v-model='wrongRateFilter'>

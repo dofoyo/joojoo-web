@@ -8,6 +8,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 import vueresource from 'vue-resource';
 
+import {store} from './store/questionlist'
+
 vue.use(vueresource);
 
 
@@ -15,6 +17,7 @@ vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new vue({
+	store:store,
   el: '#app', 
   router,
   template: '<app/>',
