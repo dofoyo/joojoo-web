@@ -5,18 +5,15 @@
         <button type="button" class="btn btn-primary" @click="refresh">刷新</button>
       </div>
       <div class="col-md-2" align="right">
-          <input type="text" class="form-control" placeholder="关键字" v-model='keywordFilter'>
+          <input type="text" class="form-control" placeholder="按关键字筛选" v-model='keywordFilter'>
       </div>      <div class="col-md-2" align="right">
-          <input type="text" class="form-control" placeholder="错误原因" v-model='wrongTagFilter'>
+          <input type="text" class="form-control" placeholder="按错误原因筛选" v-model='wrongTagFilter'>
       </div>
       <div class="col-md-2" align="right">
-          <input type="text" class="form-control" placeholder="知识点" v-model='knowledgeTagFilter'>
+          <input type="text" class="form-control" placeholder="按知识点筛选" v-model='knowledgeTagFilter'>
       </div>
       <div class="col-md-2" align="right">
-          <input type="text" class="form-control" placeholder="难度" v-model='difficultyFilter'>
-      </div>
-      <div class="col-md-1" align="right">
-        <button type="button" class="btn btn-primary" @click="filter">筛选</button>
+          <input type="text" class="form-control" placeholder="按难度筛选" v-model='difficultyFilter'>
       </div>
     </div>
 
@@ -60,23 +57,40 @@ export default {
       keywordFilter:''
     }
   },
+  watch:{
+    'knowledgeTagFilter':{
+      handler: function(val, oldval){
+        var vm = this;
+        vm.$store.commit('setKnowledgeTagFilter',val);
+        vm.getData();
+      }
+    },
+    'wrongTagFilter':{
+      handler: function(val, oldval){
+        var vm = this;
+        vm.$store.commit('setWrongTagFilter',val);
+        vm.getData();
+      }
+    },
+    'keywordFilter':{
+      handler: function(val, oldval){
+        var vm = this;
+        vm.$store.commit('setKeywordFilter',val);
+        vm.getData();
+      }
+    },
+    'difficultyFilter':{
+      handler: function(val, oldval){
+        var vm = this;
+        vm.$store.commit('setDifficultyFilter',val);
+        vm.getData();
+      }
+    }
+  },
   mounted: function() {
-      this.knowledgeTagFilter = this.$store.state.knowledgeTagFilter;
-      this.wrongTagFilter = this.$store.state.wrongTagFilter;
-      this.difficultyFilter = this.$store.state.difficultyFilter;
-      this.keywordFilter = this.$store.state.keywordFilter;
-
       this.getData();
   },
   methods:{
-    filter:function(){
-      var vm = this;
-      vm.$store.commit('setKnowledgeTagFilter',vm.knowledgeTagFilter);
-      vm.$store.commit('setWrongTagFilter',vm.wrongTagFilter);
-      vm.$store.commit('setDifficultyFilter',vm.difficultyFilter);
-      vm.$store.commit('setKeywordFilter',vm.keywordFilter);
-      vm.getData();
-    },
     getData:function(){      
       var vm = this;
       var apiurl = process.env.API_ROOT + 'questions';
