@@ -8,17 +8,21 @@
           <td @click="next">下一题</td>
         </tr>
         <tr>
-          <td colspan="2">
+          <td>
             <textarea class="form-control" rows="3" v-model="question.content"></textarea>
-            <button type="button" id="updateContent" class="btn btn-primary btn-lg btn-block" @click="updateContent" :disabled="disableUpdateContentButton">{{msg}}</button>
+            <button type="button" id="updateContent" class="btn btn-primary btn-lg btn-block" @click="updateContent" :disabled="disableUpdateContentButton">{{updateContentMsg}}</button>
           </td>
           <td>
             <textarea class="form-control" rows="3" v-model="question.knowledgeTag"></textarea>
-            <button type="button" id="updateKnowledgeTag" class="btn btn-primary btn-lg btn-block" @click="updateKnowledgeTag" :disabled="disableUpdateKnowledgeTagButton">{{msg}}</button>
+            <button type="button" id="updateKnowledgeTag" class="btn btn-primary btn-lg btn-block" @click="updateKnowledgeTag" :disabled="disableUpdateKnowledgeTagButton">{{updateKnowledgeTagMsg}}</button>
+          </td>
+          <td>
+            <textarea class="form-control" rows="3" v-model="question.wrongTag"></textarea>
+            <button type="button" id="updateWrongTag" class="btn btn-primary btn-lg btn-block" @click="updateWrongTag" :disabled="disableUpdateWrongTagButton">{{updateWrongTagMsg}}</button>
           </td>
         </tr>
         <tr>
-          <td colspan="3">
+          <td>
            <div class="row">
               <div class="col-md-1">难度：</div>
               <div class="col-md-1"><button type="button" class="btn btn-default" @click="minDifficulty">-</button></div>
@@ -26,15 +30,11 @@
               <div class="col-md-1"><button type="button" class="btn btn-default"  @click="addDifficulty">+</button></div>
             </div>
           </td>
+          <td></td>
+          <td></td>
         </tr>
         <tr>
-          <td colspan="3">
-              <img :src="question.originalImageUrl" class="img-responsive">
-              <img :src="question.contentImageUrl" class="img-responsive">
-          </td>
-        </tr>  
-        <tr>
-          <td colspan="3">
+          <td>
            <div class="row">
               <div class="col-md-1">正确：</div>
               <div class="col-md-1"><button type="button" class="btn btn-default" @click="minRightTimes">-</button></div>
@@ -42,22 +42,19 @@
               <div class="col-md-1"><button type="button" class="btn btn-default"  @click="addRightTimes">+</button></div>
             </div>
           </td>
+          <td></td>
+          <td></td>
         </tr>
         <tr>
           <td>错误：{{question.wrongTimes}}</td>
-          <td colspan="2">
-              <div class="row">
-                <div class="col-lg-8">
-                  <div class="input-group">
-                    <input type="text" class="form-control" placeholder="错误原因" v-model='question.wrongTag'>
-                    <span class="input-group-btn">
-                      <button class="btn btn-default" type="button" id="updateWrongTag" @click="updateWrongTag" :disabled="disableUpdateWrongTagButton">{{msg}}</button>
-                    </span>
-                  </div>
-                </div>
-              </div>
-          </td>
+          <td></td>
+          <td></td>
         </tr>
+        <tr>
+          <td colspan="3">
+              <img :src="question.originalImageUrl" class="img-responsive">
+          </td>
+        </tr>  
 
         <tr>
           <td colspan="3">
@@ -83,11 +80,38 @@ export default {
   },
   data () {
     return {
-      msg: '保存',
+      updateContentMsg:'题目',
+      updateKnowledgeTagMsg:'知识点',
+      updateWrongTagMsg:'错误原因',
       //pindex:0,
       index:0,
       //nindex:0,
       question:{},
+      wrongTags:[{
+        "name":"读题",
+        "value":[{"reason":"漏关键字"}]
+      },{
+        "name":"审题",
+        "value":[{"reason":"不会"},
+                  {"reason":"概念错"},
+                  {"reason":"思路错"},
+                  {"reason":"方法错"}]
+      },{
+        "name":"列式",
+        "value":[{"reason":"公式错"},
+                  {"reason":"数字错"},
+                  {"reason":"单位错"}]
+      },{
+        "name":"计算",
+        "value":[{"reason":"通分错"},
+                  {"reason":"约分错"},
+                  {"reason":"加减乘除错"},
+                  {"reason":"添漏项"},
+                  {"reason":"抄写错"}]
+      },{
+        "name":"答即所问",
+        "value":[{"reason":"答非所问"}]
+      }],
       oldKnowledgeTag:'',
       oldContent:'',
       oldWrongTag:'',
@@ -105,8 +129,10 @@ export default {
         var vm = this;
         if(vm.oldWrongTag != val){
           vm.disableUpdateWrongTagButton = false;
+          vm.updateWrongTagMsg = '保存';
         }else{
           vm.disableUpdateWrongTagButton = true;
+          vm.updateWrongTagMsg = '错误原因';
         }
       },
       deep:true
@@ -116,8 +142,10 @@ export default {
         var vm = this;
         if(vm.oldKnowledgeTag != val){
           vm.disableUpdateKnowledgeTagButton = false;
+          vm.updateKnowledgeTagMsg = '保存';
         }else{
           vm.disableUpdateKnowledgeTagButton = true;
+          vm.updateKnowledgeTagMsg = '知识点';
         }
       },
       deep:true
@@ -127,8 +155,10 @@ export default {
         var vm = this;
         if(vm.oldContent != val){
           vm.disableUpdateContentButton = false;
+          vm.updateContentMsg = '保存';
         }else{
           vm.disableUpdateContentButton = true;
+          vm.updateContentMsg = '题目';
         }
       },
       deep:true

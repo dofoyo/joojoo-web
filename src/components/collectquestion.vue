@@ -4,20 +4,35 @@
       <div class="col-md-2" align="right">
         <button type="button" class="btn btn-primary" @click="refresh">刷新</button>
       </div>
-      <div class="col-md-2" align="right">
-          <input type="text" class="form-control" placeholder="按关键字筛选" v-model='keywordFilter'>
-      </div>      <div class="col-md-2" align="right">
-          <input type="text" class="form-control" placeholder="按错误原因筛选" v-model='wrongTagFilter'>
+      <div class="col-md-1" align="right">
+          <input type="text" class="form-control" placeholder="关键字" v-model='keywordFilter'>
+      </div>      
+      <div class="col-md-1" align="right">
+          <input type="text" class="form-control" placeholder="错误原因" v-model='wrongTagFilter'>
       </div>
-      <div class="col-md-2" align="right">
-          <input type="text" class="form-control" placeholder="按知识点筛选" v-model='knowledgeTagFilter'>
+      <div class="col-md-1" align="right">
+          <input type="text" class="form-control" placeholder="知识点" v-model='knowledgeTagFilter'>
       </div>
-      <div class="col-md-2" align="right">
-          <input type="text" class="form-control" placeholder="按难度筛选" v-model='difficultyFilter'>
+      <div class="col-md-1" align="right">
+          <input type="text" class="form-control" placeholder="难度" v-model='difficultyFilter'>
+      </div>
+      <div class="col-md-1">
+          <input type="text" class="form-control" placeholder="错误率" v-model='wrongRateFilter'>
       </div>
     </div>
 
     <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>序号</th>
+          <th>错题</th>
+          <th>题目</th>
+          <th>错误原因</th>
+          <th>知识点</th>
+          <th>难度</th>
+          <th>错误率</th>
+        </tr>
+      </thead>
       <tbody>
       <tr v-for="(question,index) in questions">
         <td>{{index+1}}</td>
@@ -38,6 +53,9 @@
         <td align="left">
           {{question.difficulty}}
         </td>
+        <td align="left">
+          {{question.wrongRate}}
+        </td>
       </tr>
       </tbody>
     </table>
@@ -54,7 +72,8 @@ export default {
       knowledgeTagFilter:'',
       wrongTagFilter:'',
       difficultyFilter:'',
-      keywordFilter:''
+      keywordFilter:'',
+      wrongRateFilter:''
     }
   },
   watch:{
@@ -62,6 +81,13 @@ export default {
       handler: function(val, oldval){
         var vm = this;
         vm.$store.commit('setKnowledgeTagFilter',val);
+        vm.getData();
+      }
+    },
+    'wrongRateFilter':{
+      handler: function(val, oldval){
+        var vm = this;
+        vm.$store.commit('setWrongRateFilter',val);
         vm.getData();
       }
     },
@@ -88,14 +114,19 @@ export default {
     }
   },
   mounted: function() {
-      this.getData();
+    this.knowledgeTagFilter = this.$store.state.knowledgeTagFilter;
+    this.wrongTagFilter = this.$store.state.wrongTagFilter;
+    this.wrongRateFilter = this.$store.state.wrongRateFilter;
+    this.difficultyFilter = this.$store.state.difficultyFilter;
+    this.keywordFilter = this.$store.state.keywordFilter;
+    this.getData();
   },
   methods:{
     getData:function(){      
       var vm = this;
       var apiurl = process.env.API_ROOT + 'questions';
       var resource = vm.$resource(apiurl);
-      resource.get({orderBy:"orderByContent",knowledgeTagFilter:vm.knowledgeTagFilter,difficultyFilter:vm.difficultyFilter,wrongTagFilter:vm.wrongTagFilter,keywordFilter:vm.keywordFilter})
+      resource.get({orderBy:"orderByContent",knowledgeTagFilter:vm.knowledgeTagFilter,difficultyFilter:vm.difficultyFilter,wrongTagFilter:vm.wrongTagFilter,keywordFilter:vm.keywordFilter,wrongRateFilter:vm.wrongRateFilter})
               .then((response) => {
                 vm.questions = response.data.content;
                 //console.log(vm.questions);
