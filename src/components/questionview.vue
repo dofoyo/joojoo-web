@@ -23,39 +23,43 @@
         </tr>
         <tr>
           <td>
-           <div class="row">
-              <div class="col-md-1">难度：</div>
-              <div class="col-md-1"><button type="button" class="btn btn-default" @click="minDifficulty">-</button></div>
-              <div class="col-md-1"><input type="text" class="form-control" v-model="question.difficulty"></div>
-              <div class="col-md-1"><button type="button" class="btn btn-default"  @click="addDifficulty">+</button></div>
+            难度：
+            <button type="button" class="btn btn-default btn-lg"  v-for="star in stars">
+                 <span class="glyphicon glyphicon-star glyphicon-lg" 
+                        :style="star.value<=question.difficulty ? 'color:red' : 'color:#CCCCCC'" 
+                        @click="setDifficulty(star.value)"></span>
+            </button>
+          </td>
+          <td rowspan="3"></td>
+          <td rowspan="3">
+            <div  class="btn-group" role="group" v-for="wrongtag in wrongTags">
+                <button type="button" 
+                        class="btn btn-default" 
+                        v-for="tag in wrongtag.tags"
+                        @click="selectWrongtag(tag.value)">
+                    {{tag.value}}
+                </button>&nbsp;&nbsp;
             </div>
           </td>
-          <td></td>
-          <td></td>
         </tr>
         <tr>
           <td>
-           <div class="row">
-              <div class="col-md-1">正确：</div>
-              <div class="col-md-1"><button type="button" class="btn btn-default" @click="minRightTimes">-</button></div>
-              <div class="col-md-1"><input type="text" class="form-control" v-model="question.rightTimes"></div>
-              <div class="col-md-1"><button type="button" class="btn btn-default"  @click="addRightTimes">+</button></div>
-            </div>
+            正确：
+            <button type="button" class="btn btn-default btn-lg"  v-for="star in stars">
+                 <span class="glyphicon glyphicon-ok glyphicon-lg" 
+                        :style="star.value<question.rightTimes ? 'color:green' : 'color:#CCCCCC'" 
+                        @click="setRightTimes(star.value+1)"></span>
+            </button>              
           </td>
-          <td></td>
-          <td></td>
         </tr>
         <tr>
           <td>错误：{{question.wrongTimes}}</td>
-          <td></td>
-          <td></td>
         </tr>
         <tr>
           <td colspan="3">
               <img :src="question.originalImageUrl" class="img-responsive">
           </td>
         </tr>  
-
         <tr>
           <td colspan="3">
            <div class="row" v-for="wrongImageUrl in question.worngImageUrls">
@@ -66,7 +70,6 @@
           </td>
         </tr>       
       </tbody>
-      
     </table>
   </div>
 </template>
@@ -80,6 +83,7 @@ export default {
   },
   data () {
     return {
+      stars:[{value:0},{value:1},{value:2},{value:3},{value:4}],
       updateContentMsg:'题目',
       updateKnowledgeTagMsg:'知识点',
       updateWrongTagMsg:'错误原因',
@@ -89,28 +93,28 @@ export default {
       question:{},
       wrongTags:[{
         "name":"读题",
-        "value":[{"reason":"漏关键字"}]
+        "tags":[{"value":"漏关键字"}]
       },{
         "name":"审题",
-        "value":[{"reason":"不会"},
-                  {"reason":"概念错"},
-                  {"reason":"思路错"},
-                  {"reason":"方法错"}]
+        "tags":[{"value":"不会"},
+                  {"value":"概念错"},
+                  {"value":"思路错"},
+                  {"value":"方法错"}]
       },{
         "name":"列式",
-        "value":[{"reason":"公式错"},
-                  {"reason":"数字错"},
-                  {"reason":"单位错"}]
+        "tags":[{"value":"公式错"},
+                  {"value":"数字错"},
+                  {"value":"单位错"}]
       },{
         "name":"计算",
-        "value":[{"reason":"通分错"},
-                  {"reason":"约分错"},
-                  {"reason":"加减乘除错"},
-                  {"reason":"添漏项"},
-                  {"reason":"抄写错"}]
+        "tags":[{"value":"通分错"},
+                  {"value":"约分错"},
+                  {"value":"加减乘除错"},
+                  {"value":"添漏项"},
+                  {"value":"抄写错"}]
       },{
-        "name":"答即所问",
-        "value":[{"reason":"答非所问"}]
+        "name":"结论",
+        "tags":[{"value":"答非所问"},{"value":"其他"}]
       }],
       oldKnowledgeTag:'',
       oldContent:'',
@@ -165,6 +169,16 @@ export default {
     }
   },
   methods:{
+    selectWrongtag:function(tag){
+      var vm = this;
+      if(vm.question.wrongTag == null){
+        vm.question.wrongTag = tag;        
+      }else{
+        vm.question.wrongTag += " " + tag;        
+      }
+      //vm.updateWrongTag();
+
+    },
     getDataFromProps:function(){
       var vm = this;
       //console.log(vm.questions);
@@ -175,20 +189,6 @@ export default {
           vm.oldKnowledgeTag = vm.question.knowledgeTag;
           vm.oldContent = vm.question.content;
           vm.oldWrongTag = vm.question.wrongTag;
-          /*
-          if(vm.index == 0){
-            vm.pindex = vm.index;
-            vm.nindex = vm.index + 1;
-          }else if(vm.index == vm.questions.length-1){
-            vm.nindex = vm.index;
-            vm.pindex = vm.index - 1; 
-          }else{
-            vm.pindex = vm.index - 1;
-            vm.nindex = vm.index + 1;
-          }
-          */
-
-          //console.log(vm.question);
           break;
         }
       }
@@ -299,14 +299,6 @@ export default {
                 console.log(response);
               });
     },
-    addRightTimes:function(){
-      this.question.rightTimes = parseInt(this.question.rightTimes) + 1;
-      this.updateRightTimes();
-    },
-    minRightTimes:function(){
-      this.question.rightTimes = parseInt(this.question.rightTimes) - 1;
-      this.updateRightTimes();
-    },
     updateDifficulty:function(){
       var root = process.env.API_ROOT;
       var apiurl = root + 'question_difficulty'
@@ -321,13 +313,23 @@ export default {
                 console.log(response);
               });
     },
-    addDifficulty:function(){
-      this.question.difficulty = parseInt(this.question.difficulty) + 1;
-      this.updateDifficulty();
+    setDifficulty:function(val){
+      if(val == this.question.difficulty){
+        this.question.difficulty -= 1;
+      }else{
+        this.question.difficulty = val;
+      }
+      //console.log(val);
+      this.updateDifficulty();      
     },
-    minDifficulty:function(){
-      this.question.difficulty = parseInt(this.question.difficulty) - 1;
-      this.updateDifficulty();
+    setRightTimes:function(val){
+      if(val == this.question.rightTimes){
+        this.question.rightTimes -= 1;        
+      }else{
+        this.question.rightTimes = val;        
+      }
+      //console.log(val);
+      this.updateRightTimes();      
     }  
   }
 }

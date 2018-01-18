@@ -4,6 +4,7 @@ import collectquestion from '@/components/collectquestion'
 import questionlist from '@/components/questionlist'
 import questionview from '@/components/questionview'
 import knowledgeTagChart from '@/components/knowledgeTagChart'
+import wrongTagChart from '@/components/wrongTagChart'
 import wrongRateChart from '@/components/wrongRateChart'
 import difficultyChart from '@/components/difficultyChart'
 
@@ -32,6 +33,11 @@ export default new Router({
       props: true
     },
     {
+      path: '/wrongTagChart',
+      name: 'wrongTagChart',
+      component: wrongTagChart
+    },
+    {
       path: '/knowledgeTagChart',
       name: 'knowledgeTagChart',
       component: knowledgeTagChart
@@ -47,4 +53,5 @@ export default new Router({
       component: difficultyChart
     }
   ]
+
 })

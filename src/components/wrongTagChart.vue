@@ -1,24 +1,13 @@
 <template>
-    <div class="row">
-    <div id="app"  class="col-md-5">
+    <div id="app">
         <schart :canvasId="canvasId"
             :type="type"
             :width="width"
             :height="height"
-            :data="difficulty"
+            :data="wrongTags"
             :options="options"
         ></schart>
     </div>
-          <div  class="col-md-2" align="right">
-          <div class="input-group">
-          <input type="text" class="form-control" placeholder="按错误率筛选..." v-model='wrongRateFilter'>
-          <span class="input-group-btn">
-            <button class="btn btn-default" type="button" @click="getData">Go!</button>
-          </span>
-        </div>
-     </div>
-
-</div>
 </template>
 <script>
 import Schart from 'vue-schart';
@@ -26,9 +15,9 @@ export default {
     data() {
         return {
             canvasId: 'myCanvas',
-            type: 'pie',
-            width: 800,
-            height: 600,
+            type: 'bar',
+            width: 1600,
+            height: 400,
             demodata: [
                 {name: '2014', value: 1342},
                 {name: '2015', value: 2123},
@@ -38,8 +27,7 @@ export default {
             options: {
                 title: ''
             },
-            difficulty:[],
-            wrongRateFilter:''
+            wrongTags:[]
         }
     },
     components:{
@@ -52,13 +40,13 @@ export default {
     getData:function(){
 
       var vm = this;
-      var apiurl = process.env.API_ROOT + 'difficulty';
+      var apiurl = process.env.API_ROOT + 'wrongTags';
       var resource = vm.$resource(apiurl);
 
-      resource.get({wrongRateFilter:vm.wrongRateFilter})
+      resource.get()
               .then((response) => {
-                vm.difficulty = response.data.content;
-                //console.log(vm.wrongRate);
+                vm.wrongTags = response.data.content;
+                //console.log(vm.wrongTags);
              })
               .catch(function(response) {
                 console.log("there are something wrong!!!");

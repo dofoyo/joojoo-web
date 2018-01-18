@@ -59,6 +59,7 @@
       </tr>
       </tbody>
     </table>
+    <div><span @click="getMore()">=============点击更多===============</span></div>
   </div>
 </template>
 
@@ -73,7 +74,8 @@ export default {
       wrongTagFilter:'',
       difficultyFilter:'',
       keywordFilter:'',
-      wrongRateFilter:''
+      wrongRateFilter:'',
+      count:20
     }
   },
   watch:{
@@ -122,11 +124,15 @@ export default {
     this.getData();
   },
   methods:{
+    getMore:function(){
+      this.count += 20;
+      this.getData();
+    },
     getData:function(){      
       var vm = this;
       var apiurl = process.env.API_ROOT + 'questions';
       var resource = vm.$resource(apiurl);
-      resource.get({orderBy:"orderByContent",knowledgeTagFilter:vm.knowledgeTagFilter,difficultyFilter:vm.difficultyFilter,wrongTagFilter:vm.wrongTagFilter,keywordFilter:vm.keywordFilter,wrongRateFilter:vm.wrongRateFilter})
+      resource.get({orderBy:"orderByContent",knowledgeTagFilter:vm.knowledgeTagFilter,difficultyFilter:vm.difficultyFilter,wrongTagFilter:vm.wrongTagFilter,keywordFilter:vm.keywordFilter,wrongRateFilter:vm.wrongRateFilter,count:vm.count})
               .then((response) => {
                 vm.questions = response.data.content;
                 //console.log(vm.questions);
