@@ -3,34 +3,41 @@
     <div class="row">
       <div class="col-md-2" align="right">
         <button type="button" class="btn btn-primary" @click="refresh">刷新</button>
-      </div>
-      <div class="col-md-1" align="right">
-          <input type="text" class="form-control" placeholder="关键字" v-model='keywordFilter'>
-      </div>      
-      <div class="col-md-1" align="right">
-          <input type="text" class="form-control" placeholder="错误原因" v-model='wrongTagFilter'>
-      </div>
-      <div class="col-md-1" align="right">
-          <input type="text" class="form-control" placeholder="知识点" v-model='knowledgeTagFilter'>
-      </div>
-      <div class="col-md-1" align="right">
-          <input type="text" class="form-control" placeholder="难度" v-model='difficultyFilter'>
-      </div>
-      <div class="col-md-1">
-          <input type="text" class="form-control" placeholder="错误率" v-model='wrongRateFilter'>
-      </div>
+      </div>    
     </div>
 
     <table class="table table-striped table-bordered">
       <thead>
-        <tr>
-          <th>序号</th>
-          <th>错题</th>
-          <th>题目</th>
-          <th>错误原因</th>
-          <th>知识点</th>
-          <th>难度</th>
-          <th>错误率</th>
+        <tr align="center">
+          <td>序号</td>
+          <td>错题</td>
+          <td>题目<br>
+                <input type="text" class="form-control" placeholder="关键字" v-model='keywordFilter'>
+          </td>
+          <td>错误原因<br>
+          <select v-model="wrongTagFilter">
+                <option value=""></option>  
+                <option v-for="item in wrongTags" v-bind:value="item.name">{{item.name}}</option>  
+            </select>  
+          </td>
+          <td>知识点<br>
+          <select v-model="knowledgeTagFilter">
+                <option value=""></option>  
+                <option v-for="item in knowledgeTags" v-bind:value="item.name">{{item.name}}</option>  
+            </select>  
+          </td>
+          <td>难度<br>
+          <select v-model="difficultyFilter">
+                <option value=""></option>  
+                <option v-for="item in difficulty" v-bind:value="item.name">{{item.name}}</option>  
+            </select>  
+          </td>
+          <td>错误率<br>
+          <select v-model="wrongRateFilter">
+                <option value=""></option>  
+                <option v-for="item in wrongRate" v-bind:value="item.name">{{item.name}}</option>  
+            </select>  
+          </td>
         </tr>
       </thead>
       <tbody>
@@ -75,7 +82,11 @@ export default {
       difficultyFilter:'',
       keywordFilter:'',
       wrongRateFilter:'',
-      count:20
+      count:20,
+      wrongTags:[],
+      wrongRate:[],
+      knowledgeTags:[],
+      difficulty:[]
     }
   },
   watch:{
@@ -122,8 +133,71 @@ export default {
     this.difficultyFilter = this.$store.state.difficultyFilter;
     this.keywordFilter = this.$store.state.keywordFilter;
     this.getData();
+    this.getWrongTags();
+    this.getWrongRate();
+    this.getKnowledgeTags();
+    this.getDifficulty();
   },
   methods:{
+    getWrongRate:function(){
+      var vm = this;
+      var apiurl = process.env.API_ROOT + 'wrongRate';
+      var resource = vm.$resource(apiurl);
+      resource.get()
+              .then((response) => {
+                vm.wrongRate = response.data.content;
+                //console.log(vm.wrongRate);
+             })
+              .catch(function(response) {
+                console.log("there are something wrong!!!");
+                console.log(response);
+              })
+
+    },
+    getKnowledgeTags:function(){
+      var vm = this;
+      var apiurl = process.env.API_ROOT + 'knowledgeTags';
+      var resource = vm.$resource(apiurl);
+      resource.get()
+              .then((response) => {
+                vm.knowledgeTags = response.data.content;
+                //console.log(vm.knowledgeTags);
+             })
+              .catch(function(response) {
+                console.log("there are something wrong!!!");
+                console.log(response);
+              })
+    },
+    getDifficulty:function(){
+      var vm = this;
+      var apiurl = process.env.API_ROOT + 'difficulty';
+      var resource = vm.$resource(apiurl);
+
+      resource.get({wrongRateFilter:vm.wrongRateFilter})
+              .then((response) => {
+                vm.difficulty = response.data.content;
+                //console.log(vm.wrongRate);
+             })
+              .catch(function(response) {
+                console.log("there are something wrong!!!");
+                console.log(response);
+              })
+    },
+    getWrongTags:function(){
+      var vm = this;
+      var apiurl = process.env.API_ROOT + 'wrongTags';
+      var resource = vm.$resource(apiurl);
+
+      resource.get()
+              .then((response) => {
+                vm.wrongTags = response.data.content;
+                //console.log(vm.wrongTags);
+             })
+              .catch(function(response) {
+                console.log("there are something wrong!!!");
+                console.log(response);
+              })
+    },
     getMore:function(){
       this.count += 20;
       this.getData();

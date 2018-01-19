@@ -32,12 +32,12 @@
           </td>
           <td rowspan="3"></td>
           <td rowspan="3">
-            <div  class="btn-group" role="group" v-for="wrongtag in wrongTags">
+            <div  class="btn-group" role="group">
                 <button type="button" 
                         class="btn btn-default" 
-                        v-for="tag in wrongtag.tags"
-                        @click="selectWrongtag(tag.value)">
-                    {{tag.value}}
+                        v-for="wrongtag in wrongTags"
+                        @click="selectWrongtag(wrongtag.name)">
+                    {{wrongtag.name}}
                 </button>&nbsp;&nbsp;
             </div>
           </td>
@@ -91,31 +91,7 @@ export default {
       index:0,
       //nindex:0,
       question:{},
-      wrongTags:[{
-        "name":"读题",
-        "tags":[{"value":"漏关键字"}]
-      },{
-        "name":"审题",
-        "tags":[{"value":"不会"},
-                  {"value":"概念错"},
-                  {"value":"思路错"},
-                  {"value":"方法错"}]
-      },{
-        "name":"列式",
-        "tags":[{"value":"公式错"},
-                  {"value":"数字错"},
-                  {"value":"单位错"}]
-      },{
-        "name":"计算",
-        "tags":[{"value":"通分错"},
-                  {"value":"约分错"},
-                  {"value":"加减乘除错"},
-                  {"value":"添漏项"},
-                  {"value":"抄写错"}]
-      },{
-        "name":"结论",
-        "tags":[{"value":"答非所问"},{"value":"其他"}]
-      }],
+      wrongTags:[],
       oldKnowledgeTag:'',
       oldContent:'',
       oldWrongTag:'',
@@ -126,6 +102,7 @@ export default {
   },
   mounted: function() {
       this.getDataFromProps();
+      this.getWrongTags();
   },
   watch:{
     'question.wrongTag': {
@@ -169,6 +146,20 @@ export default {
     }
   },
   methods:{
+    getWrongTags:function(){
+      var vm = this;
+      var apiurl = process.env.API_ROOT + 'wrongTags';
+      var resource = vm.$resource(apiurl);
+      resource.get()
+              .then((response) => {
+                vm.wrongTags = response.data.content;
+                //console.log(vm.wrongTags);
+             })
+              .catch(function(response) {
+                console.log("there are something wrong!!!");
+                console.log(response);
+              })
+    },
     selectWrongtag:function(tag){
       var vm = this;
       if(vm.question.wrongTag == null){

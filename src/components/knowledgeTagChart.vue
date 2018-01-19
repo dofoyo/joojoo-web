@@ -46,7 +46,7 @@ export default {
       resource.get()
               .then((response) => {
                 vm.knowledgeTags = response.data.content;
-                console.log(vm.knowledgeTags);
+                //console.log(vm.knowledgeTags);
              })
               .catch(function(response) {
                 console.log("there are something wrong!!!");
