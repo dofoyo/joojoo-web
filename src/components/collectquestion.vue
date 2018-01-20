@@ -10,7 +10,6 @@
       <thead>
         <tr align="center">
           <td>序号</td>
-          <td>错题</td>
           <td>题目<br>
                 <input type="text" class="form-control" placeholder="关键字" v-model='keywordFilter'>
           </td>
@@ -43,11 +42,6 @@
       <tbody>
       <tr v-for="(question,index) in questions">
         <td>{{index+1}}</td>
-        <td align="left">
-          <router-link :to="{name:'questionview',params:{id:question.id,questions:questions}}">
-              <img :src="question.originalImageUrl" class="img-rounded">
-          </router-link>
-        </td>
         <td align="left" @click="routergo(question.id)">
           {{question.content}}
         </td>

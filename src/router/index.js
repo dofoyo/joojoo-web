@@ -7,6 +7,7 @@ import knowledgeTagChart from '@/components/knowledgeTagChart'
 import wrongTagChart from '@/components/wrongTagChart'
 import wrongRateChart from '@/components/wrongRateChart'
 import difficultyChart from '@/components/difficultyChart'
+import classifyImage from '@/components/classifyImage'
 
 Vue.use(Router)
 
@@ -51,6 +52,11 @@ export default new Router({
       path: '/difficultyChart',
       name: 'difficultyChart',
       component: difficultyChart
+    },
+    {
+      path: '/classifyImage',
+      name: 'classifyImage',
+      component: classifyImage
     }
   ]
 
