@@ -13,12 +13,6 @@
           <td>题目<br>
                 <input type="text" class="form-control" placeholder="关键字" v-model='keywordFilter'>
           </td>
-          <td>错误原因<br>
-          <select v-model="wrongTagFilter">
-                <option value=""></option>  
-                <option v-for="item in wrongTags" v-bind:value="item.name">{{item.name}}</option>  
-            </select>  
-          </td>
           <td>知识点<br>
           <select v-model="knowledgeTagFilter">
                 <option value=""></option>  
@@ -29,6 +23,12 @@
           <select v-model="difficultyFilter">
                 <option value=""></option>  
                 <option v-for="item in difficulty" v-bind:value="item.name">{{item.name}}</option>  
+            </select>  
+          </td>
+          <td>错误原因<br>
+          <select v-model="wrongTagFilter">
+                <option value=""></option>  
+                <option v-for="item in wrongTags" v-bind:value="item.name">{{item.name}}</option>  
             </select>  
           </td>
           <td>错误率<br>
@@ -46,13 +46,13 @@
           {{question.content}}
         </td>
         <td align="left">
-          {{question.wrongTag}}
-        </td>
-        <td align="left">
           {{question.knowledgeTag}}
         </td>
         <td align="left">
           {{question.difficulty}}
+        </td>
+        <td align="left">
+          {{question.wrongTag}}
         </td>
         <td align="left">
           {{question.wrongRate}}
@@ -76,7 +76,7 @@ export default {
       difficultyFilter:'',
       keywordFilter:'',
       wrongRateFilter:'',
-      count:20,
+      count:3000,
       wrongTags:[],
       wrongRate:[],
       knowledgeTags:[],

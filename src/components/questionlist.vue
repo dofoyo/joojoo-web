@@ -7,13 +7,13 @@
           <input type="text" class="form-control" placeholder="关键字" v-model='keywordFilter'>
       </div>      
       <div class="col-md-1">
-          <input type="text" class="form-control" placeholder="错误原因" v-model='wrongTagFilter'>
-      </div>
-      <div class="col-md-1">
           <input type="text" class="form-control" placeholder="知识点" v-model='knowledgeTagFilter'>
       </div>
       <div class="col-md-1">
           <input type="text" class="form-control" placeholder="难度" v-model='difficultyFilter'>
+      </div>
+      <div class="col-md-1">
+          <input type="text" class="form-control" placeholder="错误原因" v-model='wrongTagFilter'>
       </div>
       <div class="col-md-1">
           <input type="text" class="form-control" placeholder="错误率" v-model='wrongRateFilter'>

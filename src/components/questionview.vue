@@ -57,14 +57,9 @@
         </tr>
         <tr>
           <td colspan="3">
-              <img :src="question.originalImageUrl" class="img-responsive">
-          </td>
-        </tr>  
-        <tr>
-          <td colspan="3">
            <div class="row" v-for="wrongImageUrl in question.worngImageUrls">
                <div class="col-md-9">
-                   <img :src="wrongImageUrl" class="img-responsive">
+                   <img :src="wrongImageUrl" class="img-responsive"><p>{{wrongImageUrl}}</p>
                 </div>
             </div>
           </td>

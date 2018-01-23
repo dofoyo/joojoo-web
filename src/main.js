@@ -4,14 +4,19 @@ import vue from 'vue'
 import app from './app'
 import router from './router'
 
+import 'element-ui/lib/theme-chalk/index.css'
+
 import 'bootstrap/dist/css/bootstrap.css';
 
 import vueresource from 'vue-resource';
 
-import {store} from './store/questionlist'
+import {store} from './store/questionlist';
+
+import ElementUI from 'element-ui'
+
+vue.use(ElementUI)
 
 vue.use(vueresource);
-
 
 vue.config.productionTip = false
 

@@ -8,7 +8,7 @@
       <div class="col-md-1"><router-link to="/wrongTagChart">wrongTagChart</router-link></div>
       <div class="col-md-1"><router-link to="/wrongRateChart">wrongRateChart</router-link></div>
       <div class="col-md-1"><router-link to="/difficultyChart">difficultyChart</router-link></div>
-      <div class="col-md-1"><router-link to="/classifyImage">classifyImage</router-link></div>
+      <div class="col-md-1"><router-link to="/collectImage">collectImage</router-link></div>
     </div>
     <router-view/>
   </div>
