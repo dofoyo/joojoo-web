@@ -1,5 +1,14 @@
 <template>
     <div id="app">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="block">
+                    <el-slider v-model="threshold" show-input></el-slider>
+                </div>
+             </div>
+        </div>
+
+
         <schart :canvasId="canvasId"
             :type="type"
             :width="width"
@@ -27,7 +36,8 @@ export default {
             options: {
                 title: ''
             },
-            knowledgeTags:[]
+            knowledgeTags:[],
+            threshold:80
         }
     },
     components:{
@@ -36,14 +46,20 @@ export default {
     mounted: function() {
       this.getData();
     },
+    watch:{
+      'threshold':{
+        handler: function(val, oldval){
+          this.getData();
+        }
+      }
+    },
     methods:{
     getData:function(){
-
       var vm = this;
       var apiurl = process.env.API_ROOT + 'knowledgeTags';
       var resource = vm.$resource(apiurl);
-
-      resource.get()
+      var d = vm.threshold / 100;
+      resource.get({threshold:d})
               .then((response) => {
                 vm.knowledgeTags = response.data.content;
                 //console.log(vm.knowledgeTags);

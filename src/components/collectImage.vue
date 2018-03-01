@@ -35,7 +35,7 @@
       <el-table :data="questions">
         <el-table-column label="" width="50px">
             <template slot-scope="scope">
-               <el-checkbox @change="handleSelectionChange(scope.row.id,this);checked=true"></el-checkbox>
+               <el-checkbox @change="handleSelectionChange(scope.row.id)"></el-checkbox>
             </template>
         </el-table-column>
         <el-table-column label="">
@@ -86,7 +86,7 @@
     methods:{
       getImages:function(){      
       var vm = this;
-      var apiurl = 'http://localhost:8081/images';
+      var apiurl = process.env.API_ROOT + 'images';
       var resource = vm.$resource(apiurl);
       resource.get({count:vm.count,imagenameFilter:vm.imagenameFilter})
               .then((response) => {
@@ -101,8 +101,7 @@
       },
       setImageToQuestion:function(){
         var vm = this;
-        var root = process.env.API_ROOT;
-        var apiurl = 'http://localhost:8081/reQuestion'
+        var apiurl = process.env.API_ROOT + 'reQuestion'
         var resource = this.$resource(apiurl);
         resource.update({questionid:vm.selectedQuestionId,imagename:vm.selectedImageName,type:vm.selectedType})
                 .then(function(){ 
@@ -116,8 +115,7 @@
       },
       newQuestion:function(val){
         //console.log(val);
-        var root = process.env.API_ROOT;
-        var apiurl = 'http://localhost:8081/newQuestion'
+        var apiurl = process.env.API_ROOT + 'newQuestion'
         var resource = this.$resource(apiurl);
         resource.update({imagename:val})
                 .then(function(){ 
@@ -131,8 +129,7 @@
       },
       doCancel:function(val){
         //console.log(val);
-        var root = process.env.API_ROOT;
-        var apiurl = 'http://localhost:8081/cancel'
+        var apiurl = process.env.API_ROOT + 'cancel'
         var resource = this.$resource(apiurl);
         resource.update({imagename:val})
                 .then(function(){ 
@@ -175,7 +172,7 @@
       },
       getQuestions:function(){
         var vm = this;
-        var apiurl = 'http://localhost:8081/questions';
+        var apiurl = process.env.API_ROOT + 'questions';
         var resource = vm.$resource(apiurl);
         resource.get({count:vm.count,keywordFilter:vm.keywordFilter})
                 .then((response) => {
@@ -201,8 +198,8 @@
         this.selectedType = 0;
         this.getQuestions();
       },
-      handleSelectionChange:function(val,item){
-        console.log(item);
+      handleSelectionChange:function(val){
+        //console.log(item);
         this.selectedQuestionId = val;
         this.dialogTableVisible=false;
         this.setImageToQuestion();

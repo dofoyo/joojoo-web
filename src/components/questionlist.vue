@@ -26,7 +26,7 @@
       <div class="col-md-7" align="left">
         {{index+1}}. {{question.content}}
         <p></p>
-        <img :src="question.contentImageUrl">
+        <img :src="question.contentImageUrl"/>
         <p></p>
         <p></p>
         <p></p>

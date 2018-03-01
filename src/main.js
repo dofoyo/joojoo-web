@@ -12,13 +12,17 @@ import vueresource from 'vue-resource';
 
 import {store} from './store/questionlist';
 
-import ElementUI from 'element-ui'
+import ElementUI from 'element-ui';
 
-vue.use(ElementUI)
+import axios from 'axios';
+
+vue.prototype.$http = axios;
+
+vue.use(ElementUI);
 
 vue.use(vueresource);
 
-vue.config.productionTip = false
+vue.config.productionTip = false;
 
 /* eslint-disable no-new */
 new vue({

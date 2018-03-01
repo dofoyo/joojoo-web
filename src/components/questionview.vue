@@ -12,27 +12,36 @@
             <textarea class="form-control" rows="3" v-model="question.content"></textarea>
             <button type="button" id="updateContent" class="btn btn-primary btn-lg btn-block" @click="updateContent" :disabled="disableUpdateContentButton">{{updateContentMsg}}</button>
           </td>
-          <td>
+          <td width="400px">
             <textarea class="form-control" rows="3" v-model="question.knowledgeTag"></textarea>
             <button type="button" id="updateKnowledgeTag" class="btn btn-primary btn-lg btn-block" @click="updateKnowledgeTag" :disabled="disableUpdateKnowledgeTagButton">{{updateKnowledgeTagMsg}}</button>
           </td>
-          <td>
+          <td width="660px">
             <textarea class="form-control" rows="3" v-model="question.wrongTag"></textarea>
             <button type="button" id="updateWrongTag" class="btn btn-primary btn-lg btn-block" @click="updateWrongTag" :disabled="disableUpdateWrongTagButton">{{updateWrongTagMsg}}</button>
           </td>
         </tr>
         <tr>
+          <td rowspan="3" align="center">
+           <img :src="question.contentImageUrl" class="img-responsive"><br>
+          <h3>
+              <span class="glyphicon glyphicon-folder-open" aria-hidden="true" @click="doSelect" v-if="question.contentImageUrl ==''"></span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="glyphicon glyphicon-picture" aria-hidden="true" @click="dialogTableVisible=true" v-if="question.contentImageUrl ==''"></span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="glyphicon glyphicon-share-alt" aria-hidden="true" @click="removeContentImage" v-if="question.contentImageUrl !=''"></span>
+            </h3>
+          </td>
           <td>
-            难度：
+             难度：
             <button type="button" class="btn btn-default btn-lg"  v-for="star in stars">
                  <span class="glyphicon glyphicon-star glyphicon-lg" 
                         :style="star.value<=question.difficulty ? 'color:red' : 'color:#CCCCCC'" 
                         @click="setDifficulty(star.value)"></span>
             </button>
           </td>
-          <td rowspan="3"></td>
           <td rowspan="3">
-            <div  class="btn-group" role="group">
+            <div class="btn-group" role="group">
                 <button type="button" 
                         class="btn btn-default" 
                         v-for="wrongtag in wrongTags"
@@ -66,6 +75,27 @@
         </tr>       
       </tbody>
     </table>
+
+    <div v-show="false">
+      <input type="file" id="selectImage" name="selectImage" accept="image/jpg,image/jpeg,image/png,image/gif" v-on:change="upload">
+    </div>
+
+    <el-dialog title="选择图片" :visible.sync="dialogTableVisible" @close="doClose" @open="getImages">
+      <el-input v-model="imagenameFilter" placeholder="按图片名筛选"></el-input>
+      <el-table :data="images">
+        <el-table-column label="" width="50px">
+            <template slot-scope="scope">
+               <el-checkbox @change="setImageToQuestion(scope.row.name,scope.row.url)"></el-checkbox>
+            </template>
+        </el-table-column>
+        <el-table-column label="">
+            <template slot-scope="scope">
+                <img :src="scope.row.url" class="img-responsive">
+                <span>{{scope.row.content}}</span>
+            </template>  
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -78,10 +108,14 @@ export default {
   },
   data () {
     return {
+      imagenameFilter:'',
+      images:[],
+      dialogTableVisible: false,
       stars:[{value:0},{value:1},{value:2},{value:3},{value:4}],
       updateContentMsg:'题目',
       updateKnowledgeTagMsg:'知识点',
       updateWrongTagMsg:'错误原因',
+      fileList: [],
       //pindex:0,
       index:0,
       //nindex:0,
@@ -141,6 +175,32 @@ export default {
     }
   },
   methods:{
+    getImages:function(){      
+      var vm = this;
+      var apiurl = process.env.API_ROOT + 'images';
+      var resource = vm.$resource(apiurl);
+      resource.get({count:vm.count,imagenameFilter:vm.imagenameFilter,typeFilter:-1})
+              .then((response) => {
+                vm.images = response.data.content;
+                //console.log(vm.images);
+             })
+              .catch(function(response) {
+                console.log("there are something wrong!!!");
+                console.log(response);
+              })
+
+    },
+    removeContentImage:function(){
+       if(this.question.contentImageUrl != ''){
+         this.$confirm('取消该图片, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '放弃',
+            type: 'warning'
+          }).then(() => {
+            this.doCancel(this.question.contentImage);
+          }).catch(()=>{});        
+        }
+    },
     getWrongTags:function(){
       var vm = this;
       var apiurl = process.env.API_ROOT + 'wrongTags';
@@ -226,7 +286,7 @@ export default {
       var resource = vm.$resource(apiurl);
       resource.update({id:vm.question.id},{content:vm.question.content})
               .then(function(){ 
-                  console.log("updateContent: success!");
+                  //console.log("updateContent: success!");
                   vm.msg = "保存";
                   vm.oldContent = vm.question.content;
                 })
@@ -244,7 +304,7 @@ export default {
       var resource = vm.$resource(apiurl);
       resource.update({id:vm.question.id},{wrongTag:vm.question.wrongTag})
               .then(function(){ 
-                  console.log("updateWrongTag: success!");
+                  //console.log("updateWrongTag: success!");
                   vm.msg = "保存";
                   vm.oldWrongTag = vm.question.wrongTag;
                 })
@@ -262,7 +322,7 @@ export default {
       var resource = vm.$resource(apiurl);
       resource.update({id:vm.question.id},{knowledgeTag:vm.question.knowledgeTag})
               .then(function(){ 
-                  console.log("updateKnowledgeTag: success!");
+                  //console.log("updateKnowledgeTag: success!");
                   vm.msg = "保存";
                   vm.oldKnowledgeTag = vm.question.knowledgeTag;
                 })
@@ -278,7 +338,7 @@ export default {
       var vm = this;
       resource.update({id:vm.question.id},{rightTimes:vm.question.rightTimes})
               .then(function(){ 
-                  console.log("updateRightTimes: success!");
+                  //console.log("updateRightTimes: success!");
                 })
               .catch(function(response){
                 console.log("updateRightTimes: there are something wrong!!!");
@@ -292,7 +352,7 @@ export default {
       var vm = this;
       resource.update({id:vm.question.id},{difficulty:vm.question.difficulty})
               .then(function(){ 
-                  console.log("update difficulty: success!");
+                  //console.log("update difficulty: success!");
                 })
               .catch(function(response){
                 console.log("update difficulty: there are something wrong!!!");
@@ -316,7 +376,75 @@ export default {
       }
       //console.log(val);
       this.updateRightTimes();      
-    }  
+    },
+    doClose:function(){
+      this.images = null;
+    },
+    setImageToQuestion:function(val,url){
+      var vm = this;
+      vm.dialogTableVisible=false;
+      var apiurl = process.env.API_ROOT + 'reQuestion'
+      var resource = this.$resource(apiurl);
+      resource.update({questionid:vm.question.id,imagename:val,type:0})
+              .then(function(){ 
+                  vm.question.contentImage = val;
+                  vm.question.contentImageUrl = url;
+                  //console.log("newQuestion: success!");
+                  //this.setImages(vm.selectedImageName,vm.selectedType);
+                })
+              .catch(function(response){
+                console.log("newQuestion: there are something wrong!!!");
+                console.log(response);
+              });
+    },
+    doCancel:function(val){
+      //console.log(val);
+      var apiurl = process.env.API_ROOT + 'cancel'
+      var resource = this.$resource(apiurl);
+      resource.update({imagename:val})
+              .then(function(){ 
+                  this.question.contentImage = "";
+                  this.question.contentImageUrl = '';
+                  //console.log("doCancel: success!");
+                })
+              .catch(function(response){
+                console.log("newQuestion: there are something wrong!!!");
+                console.log(response);
+              });
+    },
+    upload:function (e) {
+          var vm = this;
+          var apiurl = process.env.API_ROOT + 'image';
+          //e.preventDefault();
+          vm.image = e.target.files[0];
+          //console.log(vm.image);
+          let supportedTypes = ['image/jpg','image/jpeg', 'image/gif', 'image/png'];
+          if (vm.image && supportedTypes.indexOf(vm.image.type) >= 0) {
+              let formData = new FormData();
+              formData.append('image', vm.image);
+              formData.append('questionid',vm.question.id);
+              let config = {
+                    headers: {
+                      'Content-Type': 'multipart/form-data'
+                    }
+              }
+              this.$http.post(apiurl, formData, config).then(function (res) {
+                //console.log(res);
+                if(res.status===200 && res.body.msg==='2'){
+                  vm.question.contentImageUrl = res.body.content;
+                }else{
+                  vm.question.contentImageUrl = '';
+                }
+            })
+
+          } else {
+              alert('文件格式只支持：jpg、jpeg、gif 和 png');
+          }
+      },
+      doSelect:function(){
+        var button = document.getElementById("selectImage");
+        button.click();
+      }
   }
 }
 
