@@ -8,8 +8,6 @@ import wrongTagChart from '@/components/wrongTagChart'
 import wrongRateChart from '@/components/wrongRateChart'
 import difficultyChart from '@/components/difficultyChart'
 import collectImage from '@/components/collectImage'
-import fileupload from '@/components/fileupload'
-import showImage from '@/components/showImage'
 
 Vue.use(Router)
 
@@ -59,16 +57,6 @@ export default new Router({
       path: '/collectImage',
       name: 'collectImage',
       component: collectImage
-    },
-    {
-      path: '/fileupload',
-      name: 'fileupload',
-      component: fileupload
-    },
-    {
-      path: '/showImage',
-      name: 'showImage',
-      component: showImage
     }
   ]
 

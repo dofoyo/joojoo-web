@@ -52,7 +52,7 @@ export default {
     getData:function(){
 
       var vm = this;
-      var apiurl = process.env.API_ROOT + 'difficulty';
+      var apiurl = process.env.API_ROOT + 'difficultyChart';
       var resource = vm.$resource(apiurl);
 
       resource.get({wrongRateFilter:vm.wrongRateFilter})

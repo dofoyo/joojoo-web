@@ -56,7 +56,7 @@ export default {
     methods:{
     getData:function(){
       var vm = this;
-      var apiurl = process.env.API_ROOT + 'knowledgeTags';
+      var apiurl = process.env.API_ROOT + 'knowledgeTagChart';
       var resource = vm.$resource(apiurl);
       var d = vm.threshold / 100;
       resource.get({threshold:d})

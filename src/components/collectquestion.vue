@@ -135,7 +135,7 @@ export default {
   methods:{
     getWrongRate:function(){
       var vm = this;
-      var apiurl = process.env.API_ROOT + 'wrongRate';
+      var apiurl = process.env.API_ROOT + 'wrongRateChart';
       var resource = vm.$resource(apiurl);
       resource.get()
               .then((response) => {
@@ -150,7 +150,7 @@ export default {
     },
     getKnowledgeTags:function(){
       var vm = this;
-      var apiurl = process.env.API_ROOT + 'knowledgeTags';
+      var apiurl = process.env.API_ROOT + 'knowledgeTagChart';
       var resource = vm.$resource(apiurl);
       resource.get()
               .then((response) => {
@@ -164,7 +164,7 @@ export default {
     },
     getDifficulty:function(){
       var vm = this;
-      var apiurl = process.env.API_ROOT + 'difficulty';
+      var apiurl = process.env.API_ROOT + 'difficultyChart';
       var resource = vm.$resource(apiurl);
 
       resource.get({wrongRateFilter:vm.wrongRateFilter})
@@ -179,7 +179,7 @@ export default {
     },
     getWrongTags:function(){
       var vm = this;
-      var apiurl = process.env.API_ROOT + 'wrongTags';
+      var apiurl = process.env.API_ROOT + 'wrongTagChart';
       var resource = vm.$resource(apiurl);
 
       resource.get()

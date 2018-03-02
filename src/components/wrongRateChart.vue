@@ -40,7 +40,7 @@ export default {
     getData:function(){
 
       var vm = this;
-      var apiurl = process.env.API_ROOT + 'wrongRate';
+      var apiurl = process.env.API_ROOT + 'wrongRateChart';
       var resource = vm.$resource(apiurl);
 
       resource.get()

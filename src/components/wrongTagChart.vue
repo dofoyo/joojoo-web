@@ -55,7 +55,7 @@ export default {
     getData:function(){
 
       var vm = this;
-      var apiurl = process.env.API_ROOT + 'wrongTags';
+      var apiurl = process.env.API_ROOT + 'wrongTagChart';
       var resource = vm.$resource(apiurl);
       var d = vm.threshold / 100;
       resource.get({threshold:d})

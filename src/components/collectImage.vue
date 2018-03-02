@@ -20,6 +20,9 @@
             <el-button type="primary" v-if="scope.row.type===-1"  icon="el-icon-picture"
               @click="contentImage(scope.row.name)">题图片</el-button>  
 
+              <el-button type="danger" v-if="scope.row.type===-1"  icon="el-icon-picture"
+              @click="deleteImage(scope.row.name)">删除</el-button>  
+
             <el-button type="danger" v-if="scope.row.type===0" icon="el-icon-refresh"
               @click="cancel(scope.row.name)">定义为题图片，点击取消</el-button>
 
@@ -146,6 +149,40 @@
                   console.log(response);
                 });
       },
+      doDelete:function(val){
+        //console.log(val);
+        var apiurl = process.env.API_ROOT + 'delete'
+        var resource = this.$resource(apiurl);
+        resource.update({imagename:val})
+                .then(function(){ 
+                    this.deleteFromImages(val);
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                      });
+                                
+                    //console.log("newQuestion: success!");
+                  })
+                .catch(function(response){
+                  console.log("doDelete: there are something wrong!!!");
+                  console.log(response);
+                });
+      },
+      deleteFromImages:function(imagename){
+        var flag = false;
+        var i=0;
+        for(; i<this.images.length; i++){
+          var image = this.images[i];
+          if(image.name===imagename){
+            flag = true;
+            break;
+          }
+        }
+        if(flag){
+          this.images.splice(i,1);          
+        }
+
+      },
       setImages:function(imagename,type){
         //console.log(this.images.length)
         for(var i=0; i<this.images.length; i++){
@@ -155,6 +192,20 @@
             break;
           }
         }
+      },
+      deleteImage(val) {
+        this.$confirm('此操作将永久删除该图片, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.doDelete(val);
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '放弃删除操作！'
+          });          
+        });
       },
       cancel(val) {
         this.$confirm('此操作将永久取消该图片, 是否继续?', '提示', {
@@ -166,7 +217,7 @@
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消'
+            message: '放弃操作'
           });          
         });
       },

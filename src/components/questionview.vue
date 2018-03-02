@@ -3,78 +3,70 @@
     <table class="table table-striped table-bordered" border="1">
       <tbody align="left">
         <tr>
-          <td @click="previous">上一题</td>
-          <td>{{question.id}}</td>
-          <td @click="next">下一题</td>
+          <td @click="previous" align="center" width="50%">上一题</td>
+          <td @click="next" align="center" width="50%">下一题</td>
         </tr>
         <tr>
           <td>
             <textarea class="form-control" rows="3" v-model="question.content"></textarea>
             <button type="button" id="updateContent" class="btn btn-primary btn-lg btn-block" @click="updateContent" :disabled="disableUpdateContentButton">{{updateContentMsg}}</button>
           </td>
-          <td width="400px">
+          <td>
             <textarea class="form-control" rows="3" v-model="question.knowledgeTag"></textarea>
             <button type="button" id="updateKnowledgeTag" class="btn btn-primary btn-lg btn-block" @click="updateKnowledgeTag" :disabled="disableUpdateKnowledgeTagButton">{{updateKnowledgeTagMsg}}</button>
           </td>
-          <td width="660px">
-            <textarea class="form-control" rows="3" v-model="question.wrongTag"></textarea>
-            <button type="button" id="updateWrongTag" class="btn btn-primary btn-lg btn-block" @click="updateWrongTag" :disabled="disableUpdateWrongTagButton">{{updateWrongTagMsg}}</button>
-          </td>
         </tr>
         <tr>
-          <td rowspan="3" align="center">
-           <img :src="question.contentImageUrl" class="img-responsive"><br>
-          <h3>
-              <span class="glyphicon glyphicon-folder-open" aria-hidden="true" @click="doSelect" v-if="question.contentImageUrl ==''"></span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span class="glyphicon glyphicon-picture" aria-hidden="true" @click="dialogTableVisible=true" v-if="question.contentImageUrl ==''"></span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span class="glyphicon glyphicon-share-alt" aria-hidden="true" @click="removeContentImage" v-if="question.contentImageUrl !=''"></span>
-            </h3>
+          <td>
+              <img :src="question.contentImageUrl" class="img-responsive"><br>
+              <h3>
+                <span class="glyphicon glyphicon-folder-open" aria-hidden="true" @click="doSelect" v-if="question.contentImageUrl ==''"></span>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-picture" aria-hidden="true" @click="dialogTableVisible=true" v-if="question.contentImageUrl ==''"></span>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-share-alt" aria-hidden="true" @click="removeContentImage" v-if="question.contentImageUrl !=''"></span>
+              </h3>
           </td>
           <td>
-             难度：
-            <button type="button" class="btn btn-default btn-lg"  v-for="star in stars">
-                 <span class="glyphicon glyphicon-star glyphicon-lg" 
-                        :style="star.value<=question.difficulty ? 'color:red' : 'color:#CCCCCC'" 
-                        @click="setDifficulty(star.value)"></span>
-            </button>
-          </td>
-          <td rowspan="3">
-            <div class="btn-group" role="group">
-                <button type="button" 
-                        class="btn btn-default" 
-                        v-for="wrongtag in wrongTags"
-                        @click="selectWrongtag(wrongtag.name)">
-                    {{wrongtag.name}}
-                </button>&nbsp;&nbsp;
+            <div>
+              难度：
+              <button type="button" class="btn btn-default btn-lg"  v-for="star in stars">
+                   <span class="glyphicon glyphicon-star glyphicon-lg" 
+                          :style="star.value<=question.difficulty ? 'color:red' : 'color:#CCCCCC'" 
+                          @click="setDifficulty(star.value)"></span>
+              </button>
+            </div>
+            <div>
+              正确：
+              <button type="button" class="btn btn-default btn-lg"  v-for="star in stars">
+                   <span class="glyphicon glyphicon-ok glyphicon-lg" 
+                          :style="star.value<question.rightTimes ? 'color:green' : 'color:#CCCCCC'" 
+                          @click="setRightTimes(star.value+1)"></span>
+              </button>  
             </div>
           </td>
         </tr>
-        <tr>
-          <td>
-            正确：
-            <button type="button" class="btn btn-default btn-lg"  v-for="star in stars">
-                 <span class="glyphicon glyphicon-ok glyphicon-lg" 
-                        :style="star.value<question.rightTimes ? 'color:green' : 'color:#CCCCCC'" 
-                        @click="setRightTimes(star.value+1)"></span>
-            </button>              
-          </td>
-        </tr>
-        <tr>
-          <td>错误：{{question.wrongTimes}}</td>
-        </tr>
-        <tr>
-          <td colspan="3">
-           <div class="row" v-for="wrongImageUrl in question.worngImageUrls">
+         <tr>
+          <td colspan="2">
+           <div class="row" v-for="wrong in question.wrongs">
                <div class="col-md-9">
-                   <img :src="wrongImageUrl" class="img-responsive"><p>{{wrongImageUrl}}</p>
+                   <img :src="wrong.imageUrl" class="img-responsive"><p>{{wrong.imageUrl}}</p>
                 </div>
+               <div class="col-md-3">
+                  <el-input placeholder="错误原因" v-model="wrong.tag" class="input-with-select">
+                    <el-select v-model="wrong.tag" slot="prepend">
+                        <el-option v-for="wrongtag in wrongTags" :key="wrongtag.name" :label="wrongtag.name" :value="wrongtag.name"></el-option>
+                    </el-select>
+                    <el-button slot="append" type="primary" @click="updateWrongTag(question.id,wrong.image,wrong.tag)" icon="el-icon-success">保存</el-button>
+                  </el-input>
+                </div>            
             </div>
           </td>
         </tr>       
       </tbody>
     </table>
+
+    <div>{{question.id}}</div>
 
     <div v-show="false">
       <input type="file" id="selectImage" name="selectImage" accept="image/jpg,image/jpeg,image/png,image/gif" v-on:change="upload">
@@ -114,7 +106,6 @@ export default {
       stars:[{value:0},{value:1},{value:2},{value:3},{value:4}],
       updateContentMsg:'题目',
       updateKnowledgeTagMsg:'知识点',
-      updateWrongTagMsg:'错误原因',
       fileList: [],
       //pindex:0,
       index:0,
@@ -123,9 +114,7 @@ export default {
       wrongTags:[],
       oldKnowledgeTag:'',
       oldContent:'',
-      oldWrongTag:'',
       disableUpdateKnowledgeTagButton:true,
-      disableUpdateWrongTagButton:true,
       disableUpdateContentButton:true
     }
   },
@@ -134,19 +123,6 @@ export default {
       this.getWrongTags();
   },
   watch:{
-    'question.wrongTag': {
-      handler: function(val, oldval){
-        var vm = this;
-        if(vm.oldWrongTag != val){
-          vm.disableUpdateWrongTagButton = false;
-          vm.updateWrongTagMsg = '保存';
-        }else{
-          vm.disableUpdateWrongTagButton = true;
-          vm.updateWrongTagMsg = '错误原因';
-        }
-      },
-      deep:true
-    },
     'question.knowledgeTag': {
       handler: function(val, oldval){
         var vm = this;
@@ -203,7 +179,7 @@ export default {
     },
     getWrongTags:function(){
       var vm = this;
-      var apiurl = process.env.API_ROOT + 'wrongTags';
+      var apiurl = process.env.API_ROOT + 'wrongTagChart';
       var resource = vm.$resource(apiurl);
       resource.get()
               .then((response) => {
@@ -215,16 +191,6 @@ export default {
                 console.log(response);
               })
     },
-    selectWrongtag:function(tag){
-      var vm = this;
-      if(vm.question.wrongTag == null){
-        vm.question.wrongTag = tag;        
-      }else{
-        vm.question.wrongTag += " " + tag;        
-      }
-      //vm.updateWrongTag();
-
-    },
     getDataFromProps:function(){
       var vm = this;
       //console.log(vm.questions);
@@ -234,7 +200,6 @@ export default {
           vm.question = vm.questions[i];
           vm.oldKnowledgeTag = vm.question.knowledgeTag;
           vm.oldContent = vm.question.content;
-          vm.oldWrongTag = vm.question.wrongTag;
           break;
         }
       }
@@ -246,7 +211,6 @@ export default {
         vm.question = vm.questions[vm.index];
         vm.oldKnowledgeTag = vm.question.knowledgeTag;
         vm.oldContent = vm.question.content;        
-        vm.oldWrongTag = vm.question.wrongTag;
       }
     },
     next:function(){
@@ -256,7 +220,6 @@ export default {
         vm.question = vm.questions[vm.index];
         vm.oldKnowledgeTag = vm.question.knowledgeTag;
         vm.oldContent = vm.question.content;          
-        vm.oldWrongTag = vm.question.wrongTag;
       }
     },
     getDataFromApi:function(){   // 无用，仅供参考 
@@ -295,23 +258,21 @@ export default {
                 console.log(response);
               });
     },
-    updateWrongTag:function(){
+    updateWrongTag:function(id,image,tag){
       var vm = this;
-      vm.disableUpdateWrongTagButton = true;
-      vm.msg = "正在保存......";
       var root = process.env.API_ROOT;
       var apiurl = root + 'question_wrongTag'
       var resource = vm.$resource(apiurl);
-      resource.update({id:vm.question.id},{wrongTag:vm.question.wrongTag})
+      resource.update({id:id,wrongImage:image,wrongTag:tag})
               .then(function(){ 
-                  //console.log("updateWrongTag: success!");
-                  vm.msg = "保存";
-                  vm.oldWrongTag = vm.question.wrongTag;
+                  vm.$message('保存成功！');
                 })
               .catch(function(response){
+                this.$message('出错！');
                 console.log("updateWrongTag: there are something wrong!!!");
                 console.log(response);
               });
+
     },
     updateKnowledgeTag:function(){
       var vm = this;
