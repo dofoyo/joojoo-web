@@ -54,7 +54,7 @@
                 </div>
                <div class="col-md-3">
                   <el-input placeholder="错误原因" v-model="wrong.tag" class="input-with-select">
-                    <el-select v-model="wrong.tag" slot="prepend">
+                    <el-select v-model="wrong.tag" slot="prepend" @change="updateWrongTag(question.id,wrong.image,wrong.tag)">
                         <el-option v-for="wrongtag in wrongTags" :key="wrongtag.name" :label="wrongtag.name" :value="wrongtag.name"></el-option>
                     </el-select>
                     <el-button slot="append" type="primary" @click="updateWrongTag(question.id,wrong.image,wrong.tag)" icon="el-icon-success">保存</el-button>

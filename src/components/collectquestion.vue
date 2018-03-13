@@ -13,6 +13,9 @@
           <td>题目<br>
                 <input type="text" class="form-control" placeholder="关键字" v-model='keywordFilter'>
           </td>
+          <td>期间<br>
+                <input type="text" class="form-control" placeholder="最近天数" v-model='duration'>
+          </td>
           <td>知识点<br>
           <select v-model="knowledgeTagFilter">
                 <option value=""></option>  
@@ -46,6 +49,9 @@
           {{question.content}}
         </td>
         <td align="left">
+          {{question.duration}}
+        </td>
+        <td align="left">
           {{question.knowledgeTag}}
         </td>
         <td align="left">
@@ -76,7 +82,8 @@ export default {
       difficultyFilter:'',
       keywordFilter:'',
       wrongRateFilter:'',
-      count:3000,
+      count:20,
+      duration:10,
       wrongTags:[],
       wrongRate:[],
       knowledgeTags:[],
@@ -118,6 +125,13 @@ export default {
         vm.$store.commit('setDifficultyFilter',val);
         vm.getData();
       }
+    },
+    'duration':{
+      handler: function(val, oldval){
+        var vm = this;
+        vm.$store.commit('setDuration',val);
+        vm.getData();
+      }
     }
   },
   mounted: function() {
@@ -126,6 +140,7 @@ export default {
     this.wrongRateFilter = this.$store.state.wrongRateFilter;
     this.difficultyFilter = this.$store.state.difficultyFilter;
     this.keywordFilter = this.$store.state.keywordFilter;
+    this.duration = this.$store.state.duration;
     this.getData();
     this.getWrongTags();
     this.getWrongRate();
@@ -200,13 +215,14 @@ export default {
       var vm = this;
       var apiurl = process.env.API_ROOT + 'questions';
       var resource = vm.$resource(apiurl);
-      resource.get({orderBy:"orderByContent",knowledgeTagFilter:vm.knowledgeTagFilter,difficultyFilter:vm.difficultyFilter,wrongTagFilter:vm.wrongTagFilter,keywordFilter:vm.keywordFilter,wrongRateFilter:vm.wrongRateFilter,count:vm.count})
+      resource.get({orderBy:"orderByDate",knowledgeTagFilter:vm.knowledgeTagFilter,difficultyFilter:vm.difficultyFilter,wrongTagFilter:vm.wrongTagFilter,keywordFilter:vm.keywordFilter,wrongRateFilter:vm.wrongRateFilter,count:vm.count,duration:vm.duration})
               .then((response) => {
                 vm.questions = response.data.content;
                 //console.log(vm.questions);
              })
               .catch(function(response) {
                 console.log("there are something wrong!!!");
+                console.log(apiurl)
                 console.log(response);
               })
 

@@ -6,6 +6,14 @@
                     <el-slider v-model="threshold" show-input></el-slider>
                 </div>
              </div>
+            <div class="col-md-4">
+             </div>
+            <div class="col-md-4">
+                <div class="block">
+                    <el-slider v-model="duration" show-input></el-slider>
+                </div>
+             </div>
+
         </div>
         <schart :canvasId="canvasId"
             :type="type"
@@ -35,7 +43,8 @@ export default {
                 title: ''
             },
             wrongTags:[],
-            threshold:100
+            threshold:100,
+            duration:10
         }
     },
     components:{
@@ -49,6 +58,11 @@ export default {
         handler: function(val, oldval){
           this.getData();
         }
+      },
+      'duration':{
+        handler: function(val, oldval){
+          this.getData();
+        }
       }
     },
     methods:{
@@ -58,7 +72,7 @@ export default {
       var apiurl = process.env.API_ROOT + 'wrongTagChart';
       var resource = vm.$resource(apiurl);
       var d = vm.threshold / 100;
-      resource.get({threshold:d})
+      resource.get({threshold:d,duration:vm.duration})
               .then((response) => {
                 vm.wrongTags = response.data.content;
                 //console.log(vm.wrongTags);

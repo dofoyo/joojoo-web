@@ -7,6 +7,9 @@
           <input type="text" class="form-control" placeholder="关键字" v-model='keywordFilter'>
       </div>      
       <div class="col-md-1">
+          <input type="text" class="form-control" placeholder="相隔天数" v-model='duration'>
+      </div>      
+      <div class="col-md-1">
           <input type="text" class="form-control" placeholder="知识点" v-model='knowledgeTagFilter'>
       </div>
       <div class="col-md-1">
@@ -47,7 +50,8 @@ export default {
       difficultyFilter:'',
       keywordFilter:'',
       wrongRateFilter:'',
-      count:20
+      count:20,
+      duration:10
     }
   },
   watch:{
@@ -85,6 +89,13 @@ export default {
         vm.$store.commit('setDifficultyFilter',val);
         vm.getData();
       }
+    },
+    'duration':{
+      handler: function(val, oldval){
+        var vm = this;
+        vm.$store.commit('setDuration',val);
+        vm.getData();
+      }
     }
   },
   mounted: function() {
@@ -93,6 +104,7 @@ export default {
     this.wrongRateFilter = this.$store.state.wrongRateFilter;
     this.difficultyFilter = this.$store.state.difficultyFilter;
     this.keywordFilter = this.$store.state.keywordFilter;
+    this.duration = this.$store.state.duration;
     this.getData();
   },
   methods:{
@@ -105,7 +117,7 @@ export default {
       var apiurl = process.env.API_ROOT + 'questions';
       var resource = vm.$resource(apiurl);
 
-      resource.get({orderBy:"",knowledgeTagFilter:vm.knowledgeTagFilter,difficultyFilter:vm.difficultyFilter,wrongTagFilter:vm.wrongTagFilter,keywordFilter:vm.keywordFilter,wrongRateFilter:vm.wrongRateFilter,count:vm.count})
+      resource.get({orderBy:"",knowledgeTagFilter:vm.knowledgeTagFilter,difficultyFilter:vm.difficultyFilter,wrongTagFilter:vm.wrongTagFilter,keywordFilter:vm.keywordFilter,wrongRateFilter:vm.wrongRateFilter,count:vm.count,duration:vm.duration})
               .then((response) => {
                 vm.questions = response.data.content;
                 //console.log(vm.questions);

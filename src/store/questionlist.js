@@ -9,9 +9,13 @@ export const store = new Vuex.Store({
 	    wrongTagFilter:'',
 	    difficultyFilter:'',
 	    wrongRateFilter:'',
-	    keywordFilter:''
+	    keywordFilter:'',
+	    duration:''
 	},
 	mutations:{
+		setDuration(state,val){
+			state.duration = val;
+		},
 		setKnowledgeTagFilter(state,val){
 			state.knowledgeTagFilter = val;
 		},

@@ -59,5 +59,4 @@ export default new Router({
       component: collectImage
     }
   ]
-
 })
