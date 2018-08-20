@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import collectquestion from '@/components/collectquestion'
 import questionlist from '@/components/questionlist'
+import questionlist2 from '@/components/questionlist2'
 import questionview from '@/components/questionview'
 import knowledgeTagChart from '@/components/knowledgeTagChart'
 import wrongTagChart from '@/components/wrongTagChart'
@@ -27,6 +28,11 @@ export default new Router({
       name: 'questionlist',
       component: questionlist
     },
+    {
+      path: '/questionlist2',
+      name: 'questionlist2',
+      component: questionlist2
+    },,
     {
       path: '/question/:id',
       name: 'questionview',

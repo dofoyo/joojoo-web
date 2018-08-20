@@ -82,7 +82,7 @@ export default {
       difficultyFilter:'',
       keywordFilter:'',
       wrongRateFilter:'',
-      count:20,
+      count:1000,
       duration:10,
       wrongTags:[],
       wrongRate:[],
